@@ -48,11 +48,27 @@ async function loadCriticalData({context, params, request}) {
     }),
   ]);
 
-  if (!collection) {
-    throw new Response(`Collection ${handle} not found`, {
-      status: 404,
-    });
-  }
+if (!collection) {
+  console.log("COLLECTION NULL", handle);
+  return {
+    collection: {
+      id: "fake-id",
+      title: "Fake Collection",
+      description: "This is a fallback collection for testing.",
+      handle,
+      products: {
+        nodes: [],
+        pageInfo: {
+          hasPreviousPage: false,
+          hasNextPage: false,
+          endCursor: null,
+          startCursor: null,
+        },
+      },
+    },
+  };
+}
+
 
   // The API handle might be localized, so redirect to the localized handle
   redirectIfHandleIsLocalized(request, {handle, data: collection});
