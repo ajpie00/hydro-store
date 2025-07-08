@@ -15,42 +15,30 @@ export const meta = ({data}) => {
 /**
  * @param {LoaderFunctionArgs} args
  */
-export async function loader(args) {
-  const {params} = args;
+export async function loader({params, context, request}) {
+  const {handle, locale} = params;
 
-  // ✅ /collections/all için yönlendirme
-  if (params.handle === 'all') {
-    throw redirect(`/${params.locale}/collections/all`);
+  // ✅ Eğer handle 'all' ise, locale'li versiyona yönlendir
+  if (handle === 'all') {
+    throw redirect(`/${locale}/collections/all`);
   }
 
-  const deferredData = loadDeferredData(args);
-  const criticalData = await loadCriticalData(args);
-  return {...deferredData, ...criticalData};
-}
-
-async function loadCriticalData({context, params, request}) {
-  const {handle} = params;
-  const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
   });
 
-  if (!handle) {
-    throw redirect('/collections');
-  }
-
   const [{collection}] = await Promise.all([
-    storefront.query(COLLECTION_QUERY, {
+    context.storefront.query(COLLECTION_QUERY, {
       variables: {handle, ...paginationVariables},
     }),
   ]);
 
   if (!collection) {
-    console.log('COLLECTION NULL', handle);
+    console.warn('COLLECTION NULL:', handle);
     return {
       collection: {
         id: 'fake-id',
-        handle: handle,
+        handle,
         title: 'Fake Collection',
         description: '',
         products: {
@@ -68,13 +56,7 @@ async function loadCriticalData({context, params, request}) {
 
   await redirectIfHandleIsLocalized(request, {handle, data: collection});
 
-  return {
-    collection,
-  };
-}
-
-function loadDeferredData({context}) {
-  return {};
+  return {collection};
 }
 
 export default function Collection() {
