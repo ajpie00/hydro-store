@@ -6,8 +6,6 @@ import {useSearchParams} from 'react-router';
 
 export async function loader({context, request, params}) {
   const {storefront} = context;
-
-  // URL parametresinden locale al
   const {locale} = params;
   const normalizedLocale = locale?.toUpperCase() || 'EN';
 
@@ -36,7 +34,7 @@ export async function loader({context, request, params}) {
   return {products};
 }
 
-export default function CollectionPage() {
+export default function CollectionAll() {
   const {products} = useLoaderData();
   const [searchParams] = useSearchParams();
 
@@ -57,7 +55,7 @@ export default function CollectionPage() {
 
   return (
     <div className="collection">
-      {/* 🌍 Dil & Para Birimi Seçici */}
+      {/* 🌍 Locale Seçici */}
       <form style={{marginBottom: '1rem'}}>
         <label htmlFor="locale">Dil:</label>
         <select
@@ -78,7 +76,7 @@ export default function CollectionPage() {
 
       <h1>Ürünler</h1>
 
-      {/* 🔍 Fiyat & Stok Filtreleme */}
+      {/* 🔍 Filtreleme */}
       <form method="GET" style={{marginBottom: '2rem'}}>
         <input type="hidden" name="locale" value={searchParams.get('locale') || 'en'} />
         <label>
