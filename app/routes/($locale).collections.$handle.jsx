@@ -16,6 +16,13 @@ export const meta = ({data}) => {
  * @param {LoaderFunctionArgs} args
  */
 export async function loader(args) {
+  const {params} = args;
+
+  // ✅ /collections/all için yönlendirme
+  if (params.handle === 'all') {
+    throw redirect(`/${params.locale}/collections/all`);
+  }
+
   const deferredData = loadDeferredData(args);
   const criticalData = await loadCriticalData(args);
   return {...deferredData, ...criticalData};
@@ -39,13 +46,13 @@ async function loadCriticalData({context, params, request}) {
   ]);
 
   if (!collection) {
-    console.log("COLLECTION NULL", handle);
+    console.log('COLLECTION NULL', handle);
     return {
       collection: {
-        id: "fake-id",
+        id: 'fake-id',
         handle: handle,
-        title: "Fake Collection",
-        description: "",
+        title: 'Fake Collection',
+        description: '',
         products: {
           nodes: [],
           pageInfo: {
@@ -145,9 +152,9 @@ const COLLECTION_QUERY = `#graphql
       title
       description
       products(
-        first: $first,
-        last: $last,
-        before: $startCursor,
+        first: $first
+        last: $last
+        before: $startCursor
         after: $endCursor
       ) {
         nodes {
