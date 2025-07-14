@@ -3,10 +3,17 @@ import {Suspense} from 'react';
 import {Image} from '@shopify/hydrogen';
 import {ProductItem} from '~/components/ProductItem';
 
+/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
+/** @template T @typedef {import('react-router').MetaFunction<T>} MetaFunction */
+/** @typedef {import('storefrontapi.generated').FeaturedCollectionFragment} FeaturedCollectionFragment */
+/** @typedef {import('storefrontapi.generated').RecommendedProductsQuery} RecommendedProductsQuery */
+/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
+
 export const meta = () => {
   return [{title: 'Hydrogen | Home'}];
 };
 
+/** @param {LoaderFunctionArgs} */
 export async function loader({params, context}) {
   const locale = params?.locale?.toUpperCase() || 'EN';
 
@@ -51,7 +58,7 @@ function loadDeferredData(context, {country, language}) {
   };
 }
 
-export default function Homepage() {
+function Homepage() {
   const data = useLoaderData();
   return (
     <div className="home">
@@ -60,6 +67,8 @@ export default function Homepage() {
     </div>
   );
 }
+
+export default Homepage;
 
 function FeaturedCollection({collection}) {
   if (!collection) return null;
@@ -148,9 +157,3 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     }
   }
 `;
-
-/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @template T @typedef {import('react-router').MetaFunction<T>} MetaFunction */
-/** @typedef {import('storefrontapi.generated').FeaturedCollectionFragment} FeaturedCollectionFragment */
-/** @typedef {import('storefrontapi.generated').RecommendedProductsQuery} RecommendedProductsQuery */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
