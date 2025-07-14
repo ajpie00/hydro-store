@@ -1,4 +1,3 @@
-import {useLoaderData} from '@remix-run/react';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
@@ -28,9 +27,7 @@ export async function loader({context, request, params}) {
   return {products};
 }
 
-export default function LocaleCollectionsAll() {
-  const {products} = useLoaderData();
-
+export default function LocaleCollectionsAll({products}) {
   return (
     <div className="collection">
       <h1>All Products</h1>

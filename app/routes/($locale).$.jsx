@@ -8,8 +8,12 @@ export async function loader({request}) {
 }
 
 export default function CatchAllPage() {
-  return null;
+  return (
+    <div style={{padding: '2rem'}}>
+      <h1>404 – Sayfa Bulunamadı</h1>
+      <p>Aradığınız sayfa mevcut değil veya kaldırılmış olabilir.</p>
+    </div>
+  );
 }
 
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
