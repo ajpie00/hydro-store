@@ -6,11 +6,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
-    hydrogen({
-      routes: fsRoutes('app/routes'), // 🔥 burada route dizinini tanımlıyoruz
-    }),
+    hydrogen(), // ❌ içinde fsRoutes kullanma
     oxygen(),
-    reactRouter(),
+    reactRouter(), // route'lar zaten burada otomatik çözülüyor
     tsconfigPaths(),
   ],
   build: {
@@ -25,3 +23,4 @@ export default defineConfig({
     },
   },
 });
+
