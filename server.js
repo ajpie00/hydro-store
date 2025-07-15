@@ -1,7 +1,7 @@
 // Virtual entry point for the app
 import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
-import {createAppLoadContext} from '.app/lib/context.js';
+import {createAppLoadContext} from './app/lib/context.js';
 
 
 /**
