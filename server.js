@@ -1,9 +1,7 @@
 // Virtual entry point for the app
+import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from './app/lib/context.js';
-import {storefrontRedirect} from '@shopify/hydrogen';
-
-import * as build from '@react-router/dev/server-build';
 
 /**
  * Vercel-compatible default export.
@@ -11,9 +9,13 @@ import * as build from '@react-router/dev/server-build';
  */
 export default async function handler(req, res) {
   try {
+    // Vercel'de executionContext olmadığı için dummy obje veriyoruz
     const context = await createAppLoadContext(req, process.env, {
-      waitUntil: () => {}, // Vercel'de ExecutionContext yok
+      waitUntil: () => {},
     });
+
+    // Vite SSR build'i dinamik import ediyoruz
+    const build = await import('virtual:react-router/server-build');
 
     const handleRequest = createRequestHandler({
       build,
@@ -23,12 +25,10 @@ export default async function handler(req, res) {
 
     const response = await handleRequest(req);
 
-    // Set cookie if session pending
     if (context.session?.isPending) {
       response.headers.set('Set-Cookie', await context.session.commit());
     }
 
-    // Redirect if 404
     if (response.status === 404) {
       const redirected = await storefrontRedirect({
         request: req,
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       return res.end(body);
     }
 
-    // Send back Response to Node's res
+    // Normal response
     res.statusCode = response.status;
     response.headers.forEach((value, key) => res.setHeader(key, value));
     const body = await response.text();
