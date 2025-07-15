@@ -3,7 +3,7 @@ import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from './app/lib/context.js';
 import {storefrontRedirect} from '@shopify/hydrogen';
 
-const build = await import('virtual:react-router/server-build');
+import * as build from '@react-router/dev/server-build';
 
 /**
  * Vercel-compatible default export.
