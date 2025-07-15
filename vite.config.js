@@ -5,15 +5,14 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [
-    hydrogen(), // ❌ içinde fsRoutes kullanma
+    hydrogen(),
     oxygen(),
-    reactRouter(), // route'lar zaten burada otomatik çözülüyor
     tsconfigPaths(),
   ],
   build: {
     assetsInlineLimit: 0,
     rollupOptions: {
-      external: ['react-router-dom/server'],
+      external: ['react-router-dom/server'], // SSR hatası varsa bunu koru
     },
   },
   ssr: {
@@ -22,4 +21,3 @@ export default defineConfig({
     },
   },
 });
-
