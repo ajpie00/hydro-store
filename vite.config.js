@@ -7,12 +7,12 @@ export default defineConfig({
   plugins: [
     hydrogen(),
     oxygen(),
-    tsconfigPaths(),
+    tsconfigPaths()
   ],
   build: {
     assetsInlineLimit: 0,
     rollupOptions: {
-      external: ['react-router-dom/server'], // SSR hatası varsa bunu koru
+      external: ['react-router-dom/server'],
     },
   },
   ssr: {
