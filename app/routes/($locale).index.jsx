@@ -1,5 +1,5 @@
 import {Await, useLoaderData, Link} from 'react-router';
-import {Suspense} from 'react';
+import {Suspense, useEffect} from 'react';
 import {Image} from '@shopify/hydrogen';
 import {ProductItem} from '~/components/ProductItem';
 
@@ -15,6 +15,8 @@ export const meta = () => {
 
 /** @param {LoaderFunctionArgs} */
 export async function loader({params, context}) {
+  console.log('✅ LOADER: ($locale).index.jsx loader çalıştı');
+
   const locale = params?.locale?.toUpperCase() || 'EN';
 
   const localeMap = {
@@ -60,8 +62,15 @@ function loadDeferredData(context, {country, language}) {
 
 function Homepage() {
   const data = useLoaderData();
+
+  // Bu sadece client tarafında log gösterir
+  useEffect(() => {
+    console.log('✅ RENDER: ($locale).index.jsx component çalıştı');
+  }, []);
+
   return (
     <div className="home">
+      <h2 style={{color: 'green'}}>✅ Bu sayfa render edildi</h2>
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
