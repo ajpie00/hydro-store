@@ -15,7 +15,7 @@ export const meta = () => {
 
 /** @param {LoaderFunctionArgs} */
 export async function loader({params, context}) {
-  console.log('✅ LOADER: ($locale).index.jsx loader çalıştı');
+  console.log('✅ LOADER ÇALIŞTI — ($locale).index.jsx');
 
   const locale = params?.locale?.toUpperCase() || 'EN';
 
@@ -63,14 +63,13 @@ function loadDeferredData(context, {country, language}) {
 function Homepage() {
   const data = useLoaderData();
 
-  // Bu sadece client tarafında log gösterir
   useEffect(() => {
-    console.log('✅ RENDER: ($locale).index.jsx component çalıştı');
+    console.log('✅ RENDER — Homepage() bileşeni client tarafında çalıştı');
   }, []);
 
   return (
     <div className="home">
-      <h2 style={{color: 'green'}}>✅ Bu sayfa render edildi</h2>
+      <h1 style={{color: 'green', textAlign: 'center'}}>✅ ($locale).index.jsx render edildi</h1>
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
