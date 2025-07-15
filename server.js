@@ -1,21 +1,27 @@
-// Virtual entry point for the app
-import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from './app/lib/context.js';
+import {storefrontRedirect} from '@shopify/hydrogen';
+import * as build from '@react-router/dev/server-build';
+import {Readable} from 'stream';
 
-/**
- * Vercel-compatible default export.
- * Handles all requests through the Hydrogen Remix server.
- */
 export default async function handler(req, res) {
   try {
-    // Vercel'de executionContext olmadığı için dummy obje veriyoruz
-    const context = await createAppLoadContext(req, process.env, {
-      waitUntil: () => {},
+    // 🔁 req'i Web standardında bir Request'e çeviriyoruz
+    const body = await new Promise((resolve) => {
+      const chunks = [];
+      req.on('data', (chunk) => chunks.push(chunk));
+      req.on('end', () => resolve(Buffer.concat(chunks)));
     });
 
-    // Vite SSR build'i dinamik import ediyoruz
-    const build = await import('virtual:react-router/server-build');
+    const webRequest = new Request(`https://${req.headers.host}${req.url}`, {
+      method: req.method,
+      headers: req.headers,
+      body: ['GET', 'HEAD'].includes(req.method) ? undefined : body,
+    });
+
+    const context = await createAppLoadContext(webRequest, process.env, {
+      waitUntil: () => {},
+    });
 
     const handleRequest = createRequestHandler({
       build,
@@ -23,7 +29,7 @@ export default async function handler(req, res) {
       getLoadContext: () => context,
     });
 
-    const response = await handleRequest(req);
+    const response = await handleRequest(webRequest);
 
     if (context.session?.isPending) {
       response.headers.set('Set-Cookie', await context.session.commit());
@@ -31,21 +37,17 @@ export default async function handler(req, res) {
 
     if (response.status === 404) {
       const redirected = await storefrontRedirect({
-        request: req,
+        request: webRequest,
         response,
         storefront: context.storefront,
       });
-      res.statusCode = redirected.status;
-      redirected.headers.forEach((value, key) => res.setHeader(key, value));
-      const body = await redirected.text();
-      return res.end(body);
+      res.writeHead(redirected.status, Object.fromEntries(redirected.headers));
+      res.end(await redirected.text());
+      return;
     }
 
-    // Normal response
-    res.statusCode = response.status;
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-    const body = await response.text();
-    res.end(body);
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.end(await response.text());
   } catch (err) {
     console.error('❌ Server error:', err);
     res.statusCode = 500;
