@@ -1,12 +1,10 @@
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from './app/lib/context.js';
 import {storefrontRedirect} from '@shopify/hydrogen';
-import * as build from '@react-router/dev/server-build';
-import {Readable} from 'stream';
 
 export default async function handler(req, res) {
   try {
-    // 🔁 req'i Web standardında bir Request'e çeviriyoruz
+    // Web standardında bir Request objesi oluştur
     const body = await new Promise((resolve) => {
       const chunks = [];
       req.on('data', (chunk) => chunks.push(chunk));
@@ -22,6 +20,9 @@ export default async function handler(req, res) {
     const context = await createAppLoadContext(webRequest, process.env, {
       waitUntil: () => {},
     });
+
+    // ✅ virtual:react-router/server-build ile Vite build'i yükleniyor
+    const build = await import('virtual:react-router/server-build');
 
     const handleRequest = createRequestHandler({
       build,
